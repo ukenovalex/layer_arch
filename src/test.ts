@@ -1,24 +1,19 @@
-import 'reflect-metadata'
+// import 'reflect-metadata';
 
-function Test(target: Function) {
-    Reflect.defineMetadata('a', 1, target);
+// function Test(target: Function) {
+// 	Reflect.defineMetadata('a', 1, target);
 
-    const meta = Reflect.getMetadata('a', target);
+// 	const meta = Reflect.getMetadata('a', target);
 
-    console.log(meta);
-    
-}
+// 	console.log(meta);
+// }
 
+// function Prop(target: Object, name: string) {}
 
-function Prop(target: Object, name: string) {
-
-}
-
-@Test
-export class C {
-    @Prop prop: number;
-}
-
+// @Test
+// export class C {
+// 	@Prop prop: number;
+// }
 
 // function Component(id: number) {
 //     console.log('init component');
@@ -33,7 +28,7 @@ export class C {
 //     return (target: Function) => {
 //         console.log('run logger');
 //     }
-    
+
 // }
 
 // function Method(target: Object, propertyKey: string, propertyDescriptor: PropertyDescriptor) {
@@ -41,7 +36,7 @@ export class C {
 //     // const oldValue = propertyDescriptor.value;
 //     propertyDescriptor.value = function(...args: any[]) {
 //         return args[0] * 10;
-//     }   
+//     }
 // }
 
 // function Prop(target: Object, propertyKey: string) {
@@ -61,9 +56,8 @@ export class C {
 
 // function Param(target: Object, propertyKey: string, index: number) {
 //     console.log(propertyKey, index);
-    
-// }
 
+// }
 
 // @Logger()
 // @Component(1)
