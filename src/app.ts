@@ -9,6 +9,7 @@ import IUserController from './users/user.controller.interface';
 import { IConfigService } from './config/config.service.interface';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { IPrismaService } from './database/prisma.service.interface';
+import 'reflect-metadata';
 
 @injectable()
 export class App {
