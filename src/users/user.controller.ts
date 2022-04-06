@@ -20,7 +20,12 @@ export class UserController extends BaseController implements IUserController {
 	) {
 		super(loggerService);
 		this.bindRoutes([
-			{ path: '/login', method: 'post', func: this.login },
+			{
+				path: '/login',
+				method: 'post',
+				func: this.login,
+				middlewares: [new ValidateMiddleware(UserLoginDto)],
+			},
 			{
 				path: '/register',
 				method: 'post',
@@ -34,10 +39,19 @@ export class UserController extends BaseController implements IUserController {
 		return this.router;
 	}
 
-	login(req: Request<{}, {}, UserLoginDto>, res: Response): void {
-		console.log(req.body);
-		this.ok(res, { data: 'login' });
-		this.loggerService.log('Login');
+	async login(
+		{ body }: Request<{}, {}, UserLoginDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.userService.validateUser(body);
+		if (!result) {
+			next(new HTTPError(401, 'Ligin is invalid'));
+			this.loggerService.error('Invalid login');
+		} else {
+			this.ok(res, { data: result });
+			this.loggerService.log('Login');
+		}
 	}
 
 	async register(
