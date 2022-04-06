@@ -4,16 +4,29 @@ import { TYPES } from '../types';
 import { BaseController } from '../common/base.controller';
 import { HTTPError } from '../errors/http-error.class';
 import { ILogger } from '../logger/logger.interface';
-import IUserController from './user.interface';
+import IUserController from './user.controller.interface';
 import 'reflect-metadata';
+import { UserLoginDto } from './dto/user-login.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
+import { User } from './user.entity';
+import { IUserService } from './user.service.interface';
+import { ValidateMiddleware } from '../common/validate.middleware';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
-	constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+	constructor(
+		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.IUserService) private userService: IUserService,
+	) {
 		super(loggerService);
 		this.bindRoutes([
 			{ path: '/login', method: 'post', func: this.login },
-			{ path: '/register', method: 'post', func: this.register },
+			{
+				path: '/register',
+				method: 'post',
+				func: this.register,
+				middlewares: [new ValidateMiddleware(UserRegisterDto)],
+			},
 		]);
 	}
 
@@ -21,14 +34,21 @@ export class UserController extends BaseController implements IUserController {
 		return this.router;
 	}
 
-	login(req: Request, res: Response): void {
+	login(req: Request<{}, {}, UserLoginDto>, res: Response): void {
+		console.log(req.body);
 		this.ok(res, { data: 'login' });
 		this.loggerService.log('Login');
 	}
 
-	register(req: Request, res: Response, next: NextFunction): void {
-		this.send(res, 201, { data: 'register' });
-		this.loggerService.log('Register');
-		// next(new HTTPError(422, "Error field", "Register User"))
+	async register(
+		{ body }: Request<{}, {}, UserRegisterDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.userService.createUser(body);
+		if (!result) {
+			return next(new HTTPError(422, 'This user is exists'));
+		}
+		this.send(res, 201, { data: result });
 	}
 }
